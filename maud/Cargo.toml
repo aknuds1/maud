@@ -12,18 +12,23 @@ repository = "https://github.com/lfairy/maud"
 description = "Compile-time HTML templates."
 categories = ["template-engine"]
 
+[features]
+tide = ["tide-framework", "http-service"]
+
 [dependencies]
 maud_htmlescape = { version = "0.17.0", path = "../maud_htmlescape" }
 maud_macros = { version = "0.20.0", path = "../maud_macros" }
 iron = { version = ">= 0.5.1, < 0.7.0", optional = true }
 rocket = { version = ">= 0.3, < 0.5", optional = true }
 actix-web = { version = ">= 0.6.12, < 0.8.0", optional = true }
+tide-framework = { version = "0.2.0", optional = true, package = "tide" }
+http-service = { version = "0.2.0", optional = true }
 
 [dev-dependencies]
 compiletest_rs = "0.3.15"
 
 [badges]
-travis-ci = { repository = "lfairy/maud" }
+travis-ci = { repository = "aknuds1/maud" }
 
 [package.metadata.docs.rs]
 all-features = true

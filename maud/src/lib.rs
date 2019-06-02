@@ -9,9 +9,16 @@
 
 #![doc(html_root_url = "https://docs.rs/maud/0.20.0")]
 
-#[cfg(feature = "actix-web")] extern crate actix_web;
-#[cfg(feature = "iron")] extern crate iron;
-#[cfg(feature = "rocket")] extern crate rocket;
+#[cfg(feature = "actix-web")]
+extern crate actix_web;
+#[cfg(feature = "iron")]
+extern crate iron;
+#[cfg(feature = "rocket")]
+extern crate rocket;
+#[cfg(feature = "tide")]
+extern crate tide_framework;
+#[cfg(feature = "tide")]
+extern crate http_service;
 
 extern crate maud_htmlescape;
 extern crate maud_macros;
@@ -154,12 +161,12 @@ pub const DOCTYPE: PreEscaped<&'static str> = PreEscaped("<!DOCTYPE html>");
 
 #[cfg(feature = "iron")]
 mod iron_support {
-    use std::io;
+    use crate::PreEscaped;
     use iron::headers::ContentType;
     use iron::modifier::{Modifier, Set};
     use iron::modifiers::Header;
     use iron::response::{Response, WriteBody};
-    use PreEscaped;
+    use std::io;
 
     impl Modifier<Response> for PreEscaped<String> {
         fn modify(self, response: &mut Response) {
@@ -178,11 +185,11 @@ mod iron_support {
 
 #[cfg(feature = "rocket")]
 mod rocket_support {
+    use crate::PreEscaped;
     use rocket::http::{ContentType, Status};
     use rocket::request::Request;
     use rocket::response::{Responder, Response};
     use std::io::Cursor;
-    use PreEscaped;
 
     impl Responder<'static> for PreEscaped<String> {
         fn respond_to(self, _: &Request) -> Result<Response<'static>, Status> {
@@ -196,16 +203,35 @@ mod rocket_support {
 
 #[cfg(feature = "actix-web")]
 mod actix_support {
-    use PreEscaped;
-    use actix_web::{Responder, HttpResponse, HttpRequest, Error};
+    use crate::PreEscaped;
+    use actix_web::{Error, HttpRequest, HttpResponse, Responder};
 
     impl Responder for PreEscaped<String> {
         type Item = HttpResponse;
         type Error = Error;
         fn respond_to<S>(self, _req: &HttpRequest<S>) -> Result<Self::Item, Self::Error> {
             Ok(HttpResponse::Ok()
-               .content_type("text/html; charset=utf-8")
-               .body(self.0))
+                .content_type("text/html; charset=utf-8")
+                .body(self.0))
+        }
+    }
+}
+
+#[cfg(feature = "tide")]
+mod tide_support {
+    use crate::PreEscaped;
+
+    use http_service::Body;
+    use tide_framework::http;
+    use tide_framework::response::{IntoResponse, Response};
+
+    impl IntoResponse for PreEscaped<String> {
+        fn into_response(self) -> Response {
+            http::Response::builder()
+                .header("content-type", "text/html; charset=utf-8")
+                .status(http::status::StatusCode::OK)
+                .body(Body::from(self.into_string()))
+                .unwrap()
         }
     }
 }
