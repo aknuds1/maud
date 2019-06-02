@@ -1,0 +1,112 @@
+<!DOCTYPE html><meta charset="utf-8"><title>Basic syntax
+ – Maud, a macro for writing HTML</title><link rel="stylesheet" href="styles.css"><meta name="theme-color" content="#808"><meta name="viewport" content="width=device-width"><header><h1><a href=".">maud</a></h1></header><nav><ul><li><a href="getting-started.html">Getting started</a></li><li><b>Basic syntax</b></li><li><a href="dynamic-content.html">Dynamic content</a></li><li><a href="partials.html">Partials</a></li><li><a href="control-structures.html">Control structures</a></li><li><a href="traits.html">The <code>Render</code> trait</a></li><li><a href="web-frameworks.html">Web framework integration</a></li><li><a href="faq.html">Frequently asked questions</a></li></ul><ul><li><a href="https://docs.rs/maud/">API documentation</a></li><li><a href="https://github.com/lfairy/maud">GitHub</a></li></ul></nav><main><h2>Basic syntax</h2><p>The next few sections will outline the syntax used by Maud templates.</p>
+<h3><a href="#literals-" aria-hidden="true" class="anchor" id="literals-"></a>Literals <code>&quot;&quot;</code></h3>
+<p>Literal strings use the same syntax as Rust. Wrap them in double quotes, and use a backslash for escapes.</p>
+<pre style="background-color:#ffeeff;">
+<span style="color:#323232;">html! {
+</span><span style="color:#323232;">    </span><span style="color:#183691;">&quot;Oatmeal, are you crazy?&quot;
+</span><span style="color:#323232;">}
+</span></pre>
+<h4><a href="#escaping-and-preescaped" aria-hidden="true" class="anchor" id="escaping-and-preescaped"></a>Escaping and <code>PreEscaped</code></h4>
+<p>By default, HTML special characters are escaped automatically. Wrap the string in <code>(PreEscaped())</code> to disable this escaping. (See the section on <a href="dynamic-content.html">dynamic content</a> to learn more about how this works.)</p>
+<pre style="background-color:#ffeeff;">
+<span style="font-weight:bold;color:#a71d5d;">use </span><span style="color:#323232;">maud::PreEscaped;
+</span><span style="color:#323232;">html! {
+</span><span style="color:#323232;">    </span><span style="color:#183691;">&quot;&lt;script&gt;alert(</span><span style="color:#0086b3;">\&quot;</span><span style="color:#183691;">XSS</span><span style="color:#0086b3;">\&quot;</span><span style="color:#183691;">)&lt;/script&gt;&quot;                </span><span style="font-style:italic;color:#969896;">// &amp;lt;script&amp;gt;...
+</span><span style="color:#323232;">    (PreEscaped(</span><span style="color:#183691;">&quot;&lt;script&gt;alert(</span><span style="color:#0086b3;">\&quot;</span><span style="color:#183691;">XSS</span><span style="color:#0086b3;">\&quot;</span><span style="color:#183691;">)&lt;/script&gt;&quot;</span><span style="color:#323232;">))  </span><span style="font-style:italic;color:#969896;">// &lt;script&gt;...
+</span><span style="color:#323232;">}
+</span></pre>
+<p>If the string is long, or contains many special characters, then it may be worth using <a href="https://doc.rust-lang.org/reference/tokens.html#raw-string-literals">raw strings</a> instead:</p>
+<pre style="background-color:#ffeeff;">
+<span style="font-weight:bold;color:#a71d5d;">use </span><span style="color:#323232;">maud::PreEscaped;
+</span><span style="color:#323232;">html! {
+</span><span style="color:#323232;">    (PreEscaped(</span><span style="font-weight:bold;color:#a71d5d;">r</span><span style="color:#183691;">#&quot;
+</span><span style="color:#183691;">        &lt;script&gt;
+</span><span style="color:#183691;">            alert(&quot;Look ma, no backslashes!&quot;);
+</span><span style="color:#183691;">        &lt;/script&gt;
+</span><span style="color:#183691;">    &quot;#</span><span style="color:#323232;">))
+</span><span style="color:#323232;">}
+</span></pre>
+<p>If you want to add a <code>&lt;!DOCTYPE html&gt;</code> declaration to your page, you may use the <code>maud::DOCTYPE</code> constant instead of writing it out by hand:</p>
+<pre style="background-color:#ffeeff;">
+<span style="font-weight:bold;color:#a71d5d;">use </span><span style="color:#323232;">maud::</span><span style="color:#0086b3;">DOCTYPE</span><span style="color:#323232;">;
+</span><span style="color:#323232;">html! {
+</span><span style="color:#323232;">    (</span><span style="color:#0086b3;">DOCTYPE</span><span style="color:#323232;">)  </span><span style="font-style:italic;color:#969896;">// &lt;!DOCTYPE html&gt;
+</span><span style="color:#323232;">}
+</span></pre>
+<h3><a href="#elements-p" aria-hidden="true" class="anchor" id="elements-p"></a>Elements <code>p</code></h3>
+<p>Write an element using curly braces: <code>p { ... }</code>.</p>
+<p>Terminate a void element using a semicolon: <code>br;</code>. Note that the result will be rendered with HTML syntax – <code>&lt;br&gt;</code> not <code>&lt;br /&gt;</code>.</p>
+<pre style="background-color:#ffeeff;">
+<span style="color:#323232;">html! {
+</span><span style="color:#323232;">    h1 { </span><span style="color:#183691;">&quot;Poem&quot; </span><span style="color:#323232;">}
+</span><span style="color:#323232;">    p {
+</span><span style="color:#323232;">        </span><span style="color:#183691;">&quot;Rock, you are a rock.&quot;
+</span><span style="color:#323232;">        br;
+</span><span style="color:#323232;">        </span><span style="color:#183691;">&quot;Gray, you are gray,&quot;
+</span><span style="color:#323232;">        br;
+</span><span style="color:#323232;">        </span><span style="color:#183691;">&quot;Like a rock, which you are.&quot;
+</span><span style="color:#323232;">        br;
+</span><span style="color:#323232;">        </span><span style="color:#183691;">&quot;Rock.&quot;
+</span><span style="color:#323232;">    }
+</span><span style="color:#323232;">}
+</span></pre>
+<p>Maud also supports ending a void element with a slash: <code>br /</code>. This syntax is <a href="https://github.com/lfairy/maud/pull/96">deprecated</a> and should not be used in new code.</p>
+<p>Before version 0.18, Maud allowed the curly braces to be omitted. This syntax was <a href="https://github.com/lfairy/maud/pull/137">removed</a> and now causes an error instead.</p>
+<h3><a href="#non-empty-attributes-idyay" aria-hidden="true" class="anchor" id="non-empty-attributes-idyay"></a>Non-empty attributes <code>id=&quot;yay&quot;</code></h3>
+<pre style="background-color:#ffeeff;">
+<span style="color:#323232;">html! {
+</span><span style="color:#323232;">    ul {
+</span><span style="color:#323232;">        li {
+</span><span style="color:#323232;">            a href</span><span style="font-weight:bold;color:#a71d5d;">=</span><span style="color:#183691;">&quot;about:blank&quot; </span><span style="color:#323232;">{ </span><span style="color:#183691;">&quot;Apple Bloom&quot; </span><span style="color:#323232;">}
+</span><span style="color:#323232;">        }
+</span><span style="color:#323232;">        li class</span><span style="font-weight:bold;color:#a71d5d;">=</span><span style="color:#183691;">&quot;lower-middle&quot; </span><span style="color:#323232;">{
+</span><span style="color:#323232;">            </span><span style="color:#183691;">&quot;Sweetie Belle&quot;
+</span><span style="color:#323232;">        }
+</span><span style="color:#323232;">        li dir</span><span style="font-weight:bold;color:#a71d5d;">=</span><span style="color:#183691;">&quot;rtl&quot; </span><span style="color:#323232;">{
+</span><span style="color:#323232;">            </span><span style="color:#183691;">&quot;Scootaloo &quot;
+</span><span style="color:#323232;">            small { </span><span style="color:#183691;">&quot;(also a chicken)&quot; </span><span style="color:#323232;">}
+</span><span style="color:#323232;">        }
+</span><span style="color:#323232;">    }
+</span><span style="color:#323232;">}
+</span></pre>
+<p>Add attributes using the syntax: <code>attr=&quot;value&quot;</code>. You can attach any number of attributes to an element. The values must be quoted: they are parsed as string literals.</p>
+<h3><a href="#empty-attributes-checked-disabledfoo" aria-hidden="true" class="anchor" id="empty-attributes-checked-disabledfoo"></a>Empty attributes <code>checked?</code> <code>disabled?[foo]</code></h3>
+<p>Declare an empty attribute using a <code>?</code> suffix: <code>checked?</code>.</p>
+<pre style="background-color:#ffeeff;">
+<span style="color:#323232;">html! {
+</span><span style="color:#323232;">    form {
+</span><span style="color:#323232;">        input </span><span style="font-weight:bold;color:#a71d5d;">type=</span><span style="color:#183691;">&quot;checkbox&quot;</span><span style="color:#323232;"> name</span><span style="font-weight:bold;color:#a71d5d;">=</span><span style="color:#183691;">&quot;cupcakes&quot;</span><span style="color:#323232;"> checked</span><span style="font-weight:bold;color:#a71d5d;">?</span><span style="color:#323232;">;
+</span><span style="color:#323232;">        </span><span style="color:#183691;">&quot; &quot;
+</span><span style="color:#323232;">        label </span><span style="font-weight:bold;color:#a71d5d;">for=</span><span style="color:#183691;">&quot;cupcakes&quot; </span><span style="color:#323232;">{ </span><span style="color:#183691;">&quot;Do you like cupcakes?&quot; </span><span style="color:#323232;">}
+</span><span style="color:#323232;">    }
+</span><span style="color:#323232;">}
+</span></pre>
+<p>To toggle an attribute based on a boolean flag, use a <code>?[]</code> suffix instead: <code>checked?[foo]</code>. This will check the value of <code>foo</code> at runtime, inserting the attribute only if <code>foo</code> equals <code>true</code>.</p>
+<pre style="background-color:#ffeeff;">
+<span style="font-weight:bold;color:#a71d5d;">let</span><span style="color:#323232;"> allow_editing </span><span style="font-weight:bold;color:#a71d5d;">= </span><span style="color:#0086b3;">true</span><span style="color:#323232;">;
+</span><span style="color:#323232;">html! {
+</span><span style="color:#323232;">    p contenteditable</span><span style="font-weight:bold;color:#a71d5d;">?</span><span style="color:#323232;">[allow_editing] {
+</span><span style="color:#323232;">        </span><span style="color:#183691;">&quot;Edit me, I &quot;
+</span><span style="color:#323232;">        em { </span><span style="color:#183691;">&quot;dare&quot; </span><span style="color:#323232;">}
+</span><span style="color:#323232;">        </span><span style="color:#183691;">&quot; you.&quot;
+</span><span style="color:#323232;">    }
+</span><span style="color:#323232;">}
+</span></pre>
+<h3><a href="#classes-and-ids-foo-bar" aria-hidden="true" class="anchor" id="classes-and-ids-foo-bar"></a>Classes and IDs <code>.foo</code> <code>#bar</code></h3>
+<p>Add classes and IDs to an element using <code>.foo</code> and <code>#bar</code> syntax. The tag will default to <code>div</code> if an element begins with a class or ID. You can chain multiple classes and IDs together, and mix and match them with other attributes:</p>
+<pre style="background-color:#ffeeff;">
+<span style="color:#323232;">html! {
+</span><span style="color:#323232;">    .container</span><span style="font-weight:bold;color:#a71d5d;">#</span><span style="color:#323232;">main {
+</span><span style="color:#323232;">        input.big.scary.bright</span><span style="font-weight:bold;color:#a71d5d;">-</span><span style="color:#323232;">red </span><span style="font-weight:bold;color:#a71d5d;">type=</span><span style="color:#183691;">&quot;button&quot;</span><span style="color:#323232;"> value</span><span style="font-weight:bold;color:#a71d5d;">=</span><span style="color:#183691;">&quot;Launch Party Cannon&quot;</span><span style="color:#323232;">;
+</span><span style="color:#323232;">    }
+</span><span style="color:#323232;">}
+</span></pre>
+<p>To toggle a class based on a boolean flag, use a <code>[]</code> suffix: <code>.foo[is_foo]</code>. This will check the value of <code>is_foo</code> at runtime, inserting that class value <code>foo</code> in the class attribute only if <code>is_foo</code> is <code>true</code>.</p>
+<pre style="background-color:#ffeeff;">
+<span style="font-weight:bold;color:#a71d5d;">let</span><span style="color:#323232;"> cuteness </span><span style="font-weight:bold;color:#a71d5d;">= </span><span style="color:#0086b3;">95</span><span style="color:#323232;">;
+</span><span style="color:#323232;">html! {
+</span><span style="color:#323232;">    p.cute[cuteness </span><span style="font-weight:bold;color:#a71d5d;">&gt; </span><span style="color:#0086b3;">50</span><span style="color:#323232;">] { </span><span style="color:#183691;">&quot;Squee!&quot; </span><span style="color:#323232;">}
+</span><span style="color:#323232;">}
+</span></pre>
+</main>

@@ -1,0 +1,38 @@
+[
+  [
+    "index",
+    null
+  ],
+  [
+    "getting-started",
+    "Getting started\n"
+  ],
+  [
+    "basic-syntax",
+    "Basic syntax\n"
+  ],
+  [
+    "dynamic-content",
+    "Dynamic content\n"
+  ],
+  [
+    "partials",
+    "Partials\n"
+  ],
+  [
+    "control-structures",
+    "Control structures\n"
+  ],
+  [
+    "traits",
+    "The `Render` trait\n"
+  ],
+  [
+    "web-frameworks",
+    "Web framework integration\n"
+  ],
+  [
+    "faq",
+    "Frequently asked questions\n"
+  ]
+]
