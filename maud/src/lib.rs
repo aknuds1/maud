@@ -9,9 +9,12 @@
 
 #![doc(html_root_url = "https://docs.rs/maud/0.21.0")]
 
-#[cfg(feature = "actix-web")] extern crate actix_web;
-#[cfg(feature = "iron")] extern crate iron;
-#[cfg(feature = "rocket")] extern crate rocket;
+#[cfg(feature = "actix-web")]
+extern crate actix_web;
+#[cfg(feature = "iron")]
+extern crate iron;
+#[cfg(feature = "rocket")]
+extern crate rocket;
 
 use std::fmt::{self, Write};
 
@@ -151,12 +154,12 @@ pub const DOCTYPE: PreEscaped<&'static str> = PreEscaped("<!DOCTYPE html>");
 
 #[cfg(feature = "iron")]
 mod iron_support {
-    use std::io;
+    use crate::PreEscaped;
     use iron::headers::ContentType;
     use iron::modifier::{Modifier, Set};
     use iron::modifiers::Header;
     use iron::response::{Response, WriteBody};
-    use crate::PreEscaped;
+    use std::io;
 
     impl Modifier<Response> for PreEscaped<String> {
         fn modify(self, response: &mut Response) {
@@ -175,11 +178,11 @@ mod iron_support {
 
 #[cfg(feature = "rocket")]
 mod rocket_support {
+    use crate::PreEscaped;
     use rocket::http::{ContentType, Status};
     use rocket::request::Request;
     use rocket::response::{Responder, Response};
     use std::io::Cursor;
-    use crate::PreEscaped;
 
     impl Responder<'static> for PreEscaped<String> {
         fn respond_to(self, _: &Request) -> Result<Response<'static>, Status> {
@@ -194,15 +197,15 @@ mod rocket_support {
 #[cfg(feature = "actix-web")]
 mod actix_support {
     use crate::PreEscaped;
-    use actix_web::{Responder, HttpResponse, HttpRequest, Error};
+    use actix_web::{Error, HttpRequest, HttpResponse, Responder};
 
     impl Responder for PreEscaped<String> {
         type Error = Error;
         type Future = Result<HttpResponse, Self::Error>;
         fn respond_to(self, _req: &HttpRequest) -> Self::Future {
             Ok(HttpResponse::Ok()
-               .content_type("text/html; charset=utf-8")
-               .body(self.0))
+                .content_type("text/html; charset=utf-8")
+                .body(self.0))
         }
     }
 }

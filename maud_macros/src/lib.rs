@@ -3,9 +3,7 @@
 #![feature(proc_macro_hygiene)]
 #![feature(proc_macro_quote)]
 #![feature(proc_macro_span)]
-
 #![doc(html_root_url = "https://docs.rs/maud_macros/0.21.0")]
-
 // TokenStream values are reference counted, and the mental overhead of tracking
 // lifetimes outweighs the marginal gains from explicit borrowing
 #![allow(clippy::needless_pass_by_value)]
@@ -16,8 +14,8 @@ mod ast;
 mod generate;
 mod parse;
 
-use proc_macro::{Literal, Span, Ident, TokenStream, TokenTree};
 use proc_macro::quote;
+use proc_macro::{Ident, Literal, Span, TokenStream, TokenTree};
 
 type ParseResult<T> = Result<T, ()>;
 

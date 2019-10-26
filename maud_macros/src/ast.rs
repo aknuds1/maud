@@ -41,19 +41,20 @@ impl Markup {
             Markup::Literal { span, .. } => span,
             Markup::Symbol { ref symbol } => span_tokens(symbol.clone()),
             Markup::Splice { outer_span, .. } => outer_span,
-            Markup::Element { ref name, ref body, .. } => {
+            Markup::Element {
+                ref name, ref body, ..
+            } => {
                 let name_span = span_tokens(name.clone());
                 name_span.join(body.span()).unwrap_or(name_span)
-            },
-            Markup::Let { at_span, ref tokens } => {
-                at_span.join(span_tokens(tokens.clone())).unwrap_or(at_span)
-            },
-            Markup::Special { ref segments } => {
-                join_spans(segments.iter().map(Special::span))
-            },
-            Markup::Match { at_span, arms_span, .. } => {
-                at_span.join(arms_span).unwrap_or(at_span)
-            },
+            }
+            Markup::Let {
+                at_span,
+                ref tokens,
+            } => at_span.join(span_tokens(tokens.clone())).unwrap_or(at_span),
+            Markup::Special { ref segments } => join_spans(segments.iter().map(Special::span)),
+            Markup::Match {
+                at_span, arms_span, ..
+            } => at_span.join(arms_span).unwrap_or(at_span),
         }
     }
 }
@@ -79,7 +80,11 @@ pub enum Attr {
 impl Attr {
     pub fn span(&self) -> Span {
         match *self {
-            Attr::Class { dot_span, ref name, ref toggler } => {
+            Attr::Class {
+                dot_span,
+                ref name,
+                ref toggler,
+            } => {
                 let name_span = name.span();
                 let dot_name_span = dot_span.join(name_span).unwrap_or(dot_span);
                 if let Some(toggler) = toggler {
@@ -87,11 +92,14 @@ impl Attr {
                 } else {
                     dot_name_span
                 }
-            },
-            Attr::Id { hash_span, ref name } => {
+            }
+            Attr::Id {
+                hash_span,
+                ref name,
+            } => {
                 let name_span = name.span();
                 hash_span.join(name_span).unwrap_or(hash_span)
-            },
+            }
             Attr::Attribute { ref attribute } => attribute.span(),
         }
     }
@@ -157,12 +165,8 @@ impl Attribute {
 
 #[derive(Debug)]
 pub enum AttrType {
-    Normal {
-        value: Markup,
-    },
-    Empty {
-        toggler: Option<Toggler>,
-    },
+    Normal { value: Markup },
+    Empty { toggler: Option<Toggler> },
 }
 
 impl AttrType {
@@ -192,11 +196,11 @@ pub struct MatchArm {
     pub body: Block,
 }
 
-pub fn span_tokens<I: IntoIterator<Item=TokenTree>>(tokens: I) -> Span {
+pub fn span_tokens<I: IntoIterator<Item = TokenTree>>(tokens: I) -> Span {
     join_spans(tokens.into_iter().map(|token| token.span()))
 }
 
-pub fn join_spans<I: IntoIterator<Item=Span>>(spans: I) -> Span {
+pub fn join_spans<I: IntoIterator<Item = Span>>(spans: I) -> Span {
     let mut iter = spans.into_iter();
     let mut span = match iter.next() {
         Some(span) => span,
