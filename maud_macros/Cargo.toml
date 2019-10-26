@@ -2,11 +2,11 @@
 name = "maud_macros"
 # When releasing a new version, please update html_root_url in src/lib.rs
 version = "0.21.0"
-authors = ["Chris Wong <lambda.fairy@gmail.com>"]
+authors = ["Chris Wong <lambda.fairy@gmail.com>", "Arve Knudsen <arve.knudsen@gmail.com"]
 license = "MIT/Apache-2.0"
 documentation = "https://docs.rs/maud_macros/"
 homepage = "https://maud.lambda.xyz/"
-repository = "https://github.com/lambda-fairy/maud"
+repository = "https://github.com/aknuds1/maud"
 description = "Compile-time HTML templates."
 edition = "2018"
 
@@ -20,4 +20,4 @@ name = "maud_macros"
 proc-macro = true
 
 [badges]
-travis-ci = { repository = "lambda-fairy/maud" }
+travis-ci = { repository = "aknuds1/maud" }

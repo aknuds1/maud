@@ -2,11 +2,11 @@
 name = "maud_htmlescape"
 # When releasing a new version, please update html_root_url in lib.rs
 version = "0.17.0"
-authors = ["Chris Wong <lambda.fairy@gmail.com>"]
+authors = ["Chris Wong <lambda.fairy@gmail.com>", "Arve Knudsen <arve.knudsen@gmail.com"]
 license = "MIT/Apache-2.0"
 documentation = "https://docs.rs/maud_htmlescape/"
 homepage = "https://maud.lambda.xyz/"
-repository = "https://github.com/lambda-fairy/maud"
+repository = "https://github.com/aknuds1/maud"
 description = "Internal support code used by Maud."
 edition = "2018"
 
