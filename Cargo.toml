@@ -3,8 +3,8 @@ members = [
     "maud_htmlescape",
     "maud_macros",
     "maud",
-    "maud_extras",
 ]
 exclude = [
     "benchmarks",
+    "docs",
 ]

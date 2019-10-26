@@ -1,9 +1,8 @@
 #![feature(test)]
 
-#[macro_use]
-extern crate horrorshow;
 extern crate test;
 
+use horrorshow::html;
 use horrorshow::prelude::*;
 
 #[derive(Debug)]

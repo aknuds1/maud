@@ -4,15 +4,12 @@
 #![feature(proc_macro_quote)]
 #![feature(proc_macro_span)]
 
-#![doc(html_root_url = "https://docs.rs/maud_macros/0.20.0")]
+#![doc(html_root_url = "https://docs.rs/maud_macros/0.21.0")]
 
 // TokenStream values are reference counted, and the mental overhead of tracking
 // lifetimes outweighs the marginal gains from explicit borrowing
 #![allow(clippy::needless_pass_by_value)]
 
-extern crate literalext;
-#[macro_use] extern crate matches;
-extern crate maud_htmlescape;
 extern crate proc_macro;
 
 mod ast;
@@ -49,7 +46,7 @@ fn expand(input: TokenStream) -> TokenStream {
     let stmts = generate::generate(markups, output_ident.clone());
     quote!({
         extern crate maud;
-        let mut $output_ident = String::with_capacity($size_hint);
+        let mut $output_ident = ::std::string::String::with_capacity($size_hint);
         $stmts
         maud::PreEscaped($output_ident)
     })

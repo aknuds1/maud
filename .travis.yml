@@ -2,24 +2,33 @@ language: rust
 rust: nightly
 sudo: false
 
-before_script:
-  - |
-    RUN_CLIPPY=true
-    rustup component add clippy --toolchain=nightly || RUN_CLIPPY=false
-
-script:
-  - (cd maud && cargo build --features="iron")
-  # The compiletest tests require a single version of the crate to be built
-  # or else there will be errors in picking the right version - so we test now
-  - cargo test --all
-  - (cd maud && cargo build --features="rocket")
-  - (cd maud && cargo build --features="actix-web")
-  - (cd benchmarks && cargo bench --no-run)
-  - |
-    if $RUN_CLIPPY; then
-      CLIPPY_STATUS=0
-      for package in maud_htmlescape maud_macros maud maud_extras; do
-        (cd $package && cargo clippy -- -D warnings) || CLIPPY_STATUS=$?
-      done
-      (exit $CLIPPY_STATUS)
-    fi
+jobs:
+  include:
+    - name: "Main"
+      script:
+        - |
+          RUN_CLIPPY=true
+          rustup component add clippy --toolchain=nightly || RUN_CLIPPY=false
+        - cargo test --all --all-features
+        - |
+          if $RUN_CLIPPY; then
+            CLIPPY_STATUS=0
+            for package in maud_htmlescape maud_macros maud; do
+              (cd $package && cargo clippy -- -D warnings) || CLIPPY_STATUS=$?
+            done
+            (exit $CLIPPY_STATUS)
+          fi
+    - name: "Benchmarks"
+      script:
+        - (cd benchmarks && cargo test --benches)
+    - name: "Documentation"
+      script:
+        - (cd docs && make -j$(nproc))
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        github_token: $GITHUB_TOKEN
+        fqdn: maud.lambda.xyz
+        local_dir: docs/site
+        on:
+          branch: master

@@ -1,18 +1,17 @@
 [package]
-
 name = "maud_macros"
 # When releasing a new version, please update html_root_url in src/lib.rs
-version = "0.20.0"
+version = "0.21.0"
 authors = ["Chris Wong <lambda.fairy@gmail.com>"]
-
 license = "MIT/Apache-2.0"
 documentation = "https://docs.rs/maud_macros/"
 homepage = "https://maud.lambda.xyz/"
-repository = "https://github.com/lfairy/maud"
+repository = "https://github.com/lambda-fairy/maud"
 description = "Compile-time HTML templates."
+edition = "2018"
 
 [dependencies]
-literalext = { version = "0.1", default-features = false, features = ["proc-macro"] }
+syn = "0.15.34"
 matches = "0.1.6"
 maud_htmlescape = { version = "0.17.0", path = "../maud_htmlescape" }
 
@@ -21,4 +20,4 @@ name = "maud_macros"
 proc-macro = true
 
 [badges]
-travis-ci = { repository = "lfairy/maud" }
+travis-ci = { repository = "lambda-fairy/maud" }

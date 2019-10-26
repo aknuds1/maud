@@ -7,7 +7,7 @@
 //!
 //! [book]: https://maud.lambda.xyz/
 
-#![doc(html_root_url = "https://docs.rs/maud/0.20.0")]
+#![doc(html_root_url = "https://docs.rs/maud/0.21.0")]
 
 #[cfg(feature = "actix-web")]
 extern crate actix_web;
@@ -19,9 +19,6 @@ extern crate rocket;
 extern crate tide_framework;
 #[cfg(feature = "tide")]
 extern crate http_service;
-
-extern crate maud_htmlescape;
-extern crate maud_macros;
 
 use std::fmt::{self, Write};
 
@@ -172,12 +169,12 @@ mod iron_support {
         fn modify(self, response: &mut Response) {
             response
                 .set_mut(Header(ContentType::html()))
-                .set_mut(Box::new(self) as Box<WriteBody>);
+                .set_mut(Box::new(self) as Box<dyn WriteBody>);
         }
     }
 
     impl WriteBody for PreEscaped<String> {
-        fn write_body(&mut self, body: &mut io::Write) -> io::Result<()> {
+        fn write_body(&mut self, body: &mut dyn io::Write) -> io::Result<()> {
             self.0.write_body(body)
         }
     }
@@ -207,9 +204,9 @@ mod actix_support {
     use actix_web::{Error, HttpRequest, HttpResponse, Responder};
 
     impl Responder for PreEscaped<String> {
-        type Item = HttpResponse;
         type Error = Error;
-        fn respond_to<S>(self, _req: &HttpRequest<S>) -> Result<Self::Item, Self::Error> {
+        type Future = Result<HttpResponse, Self::Error>;
+        fn respond_to(self, _req: &HttpRequest) -> Self::Future {
             Ok(HttpResponse::Ok()
                 .content_type("text/html; charset=utf-8")
                 .body(self.0))

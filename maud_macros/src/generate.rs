@@ -1,3 +1,4 @@
+use matches::matches;
 use maud_htmlescape::Escaper;
 use proc_macro::{
     Delimiter,
@@ -10,7 +11,7 @@ use proc_macro::{
     TokenTree,
 };
 
-use ast::*;
+use crate::ast::*;
 
 pub fn generate(markups: Vec<Markup>, output_ident: TokenTree) -> TokenStream {
     let mut build = Builder::new(output_ident.clone());
@@ -83,7 +84,7 @@ impl Generator {
         quote!({
             // Create a local trait alias so that autoref works
             trait Render: maud::Render {
-                fn __maud_render_to(&self, output_ident: &mut String) {
+                fn __maud_render_to(&self, output_ident: &mut ::std::string::String) {
                     maud::Render::render_to(self, output_ident);
                 }
             }

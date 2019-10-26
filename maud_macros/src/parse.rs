@@ -1,5 +1,6 @@
 use proc_macro::{
     Delimiter,
+    Ident,
     Literal,
     Spacing,
     Span,
@@ -9,10 +10,10 @@ use proc_macro::{
 use std::collections::HashMap;
 use std::mem;
 
-use literalext::LiteralExt;
+use syn::{LitStr, parse_str};
 
-use ast;
-use ParseResult;
+use crate::ast;
+use crate::ParseResult;
 
 pub fn parse(input: TokenStream) -> ParseResult<Vec<ast::Markup>> {
     Parser::new(input).markups()
@@ -164,6 +165,11 @@ impl Parser {
                 let name = self.try_namespaced_name().expect("identifier");
                 self.element(name)?
             },
+            // Div element shorthand
+            TokenTree::Punct(ref punct) if punct.as_char() == '.' || punct.as_char() == '#' => {
+                let name = TokenTree::Ident(Ident::new("div", punct.span()));
+                self.element(name.into())?
+            },
             // Splice
             TokenTree::Group(ref group) if group.delimiter() == Delimiter::Parenthesis => {
                 self.advance();
@@ -185,10 +191,12 @@ impl Parser {
 
     /// Parses and renders a literal string.
     fn literal(&mut self, lit: &Literal) -> ParseResult<ast::Markup> {
-        let content = lit.parse_string().unwrap_or_else(|| {
-            lit.span().error("expected string").emit();
-            String::new()  // Insert a dummy value
-        });
+        let content = parse_str::<LitStr>(&lit.to_string())
+            .map(|l| l.value())
+            .unwrap_or_else(|_| {
+                lit.span().error("expected string").emit();
+                String::new()  // Insert a dummy value
+            });
         Ok(ast::Markup::Literal {
             content,
             span: lit.span(),
@@ -502,7 +510,7 @@ impl Parser {
                         let markup_span = markup.span();
                         markup_span
                             .error("element body must be wrapped in braces")
-                            .help("see https://github.com/lfairy/maud/pull/137 for details")
+                            .help("see https://github.com/lambda-fairy/maud/pull/137 for details")
                             .emit();
                         ast::ElementBody::Block {
                             block: ast::Block {
